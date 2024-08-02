@@ -1,3 +1,4 @@
+# to run, simply do: python app-manual.py
 import logging
 from random import randint
 from flask import Flask, request
