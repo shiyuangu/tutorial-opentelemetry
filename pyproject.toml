@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "tutorial-opentelemetry"
+version = "0.1.0"
+description = ""
+authors = ["shgu <shgu@adobe.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.0.3"
+opentelemetry-distro = "^0.47b0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
