@@ -69,7 +69,7 @@ set_meter_provider(MeterProvider(metric_readers=[metric_reader]))
   # the tracer also handles the sampling logic in Tracer.start_span Cf: https://vscode.dev/github.com/open-telemetry/opentelemetry-python/blob/main/opentelemetry-sdk/src/opentelemetry/sdk/trace/__init__.py#L1110
 
 #tracer = trace.get_tracer("diceroller.tracer")
-tracer = trace.get_tracer("sgu-tracer")
+tracer = trace.get_tracer("sgu-tracer",schema_url="http://sgu-schema_url.com")
 
 # Acquire a meter.
 meter = metrics.get_meter("diceroller.meter")
@@ -102,3 +102,213 @@ def roll():
 
 if __name__ == "__main__":
      app.run(port=8080)
+
+# sgu: to run, simply do: python app-manual.py
+# note that the instrument scope 'sgu-tracer' or schema_url doesn't show up anywhere. 
+# * Serving Flask app 'app-manual'
+#  * Debug mode: off
+# INFO:werkzeug:WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+#  * Running on http://127.0.0.1:8080
+# INFO:werkzeug:Press CTRL+C to quit
+# sgu: nothing is printed until a request is received. 
+# WARNING:__main__:Anonymous player is rolling the dice: 2
+# {
+#     "name": "roll",
+#     "context": {
+#         "trace_id": "0x01938e8cc651635d09507a1cde833818",
+#         "span_id": "0xc9aebaa349550468",
+#         "trace_state": "[]"
+#     },
+#     "kind": "SpanKind.INTERNAL",
+#     "parent_id": null,
+#     "start_time": "2024-08-02T22:37:54.289062Z",
+#     "end_time": "2024-08-02T22:37:54.289361Z",
+#     "status": {
+#         "status_code": "UNSET"
+#     },
+#     "attributes": {
+#         "roll.value": "2",
+#         "x-ms-user": "test-otel" #sgu: this is from the request curl -H "x-ms-user: test-otel" http://localhost:8080/rolldice
+#     },
+#     "events": [],
+#     "links": [],
+#     "resource": {
+#         "attributes": {
+#             "telemetry.sdk.language": "python",
+#             "telemetry.sdk.name": "opentelemetry",
+#             "telemetry.sdk.version": "1.26.0",
+#             "service.name": "unknown_service"
+#         },
+#         "schema_url": ""
+#     }
+# }
+# INFO:werkzeug:127.0.0.1 - - [02/Aug/2024 15:37:54] "GET /rolldice HTTP/1.1" 200 -
+# {   #sgu: this is the metric record; it's printed every 5 seconds if the metric is not None
+#     "resource_metrics": [
+#         {
+#             "resource": {
+#                 "attributes": {
+#                     "telemetry.sdk.language": "python",
+#                     "telemetry.sdk.name": "opentelemetry",
+#                     "telemetry.sdk.version": "1.26.0",
+#                     "service.name": "unknown_service"
+#                 },
+#                 "schema_url": ""
+#             },
+#             "scope_metrics": [
+#                 {
+#                     "scope": {
+#                         "name": "diceroller.meter",
+#                         "version": "",
+#                         "schema_url": "",
+#                         "attributes": null
+#                     },
+#                     "metrics": [
+#                         {
+#                             "name": "dice.rolls",
+#                             "description": "The number of rolls by roll value",
+#                             "unit": "",
+#                             "data": {
+#                                 "data_points": [
+#                                     {
+#                                         "attributes": {
+#                                             "roll.value": "2"
+#                                         },
+#                                         "start_time_unix_nano": 1722638274289139000,
+#                                         "time_unix_nano": 1722638275948616000,
+#                                         "value": 1
+#                                     }
+#                                 ],
+#                                 "aggregation_temporality": 2,
+#                                 "is_monotonic": true
+#                             }
+#                         }
+#                     ],
+#                     "schema_url": ""
+#                 }
+#             ],
+#             "schema_url": ""
+#         }
+#     ]
+# }
+# {
+#     "body": "Anonymous player is rolling the dice: 2",
+#     "severity_number": "<SeverityNumber.WARN: 13>",
+#     "severity_text": "WARN",
+#     "attributes": {
+#         "code.filepath": "/Users/shgu/repos-2/tutorial-opentelemetry/app-manual.py",
+#         "code.function": "roll_dice",
+#         "code.lineno": 97
+#     },
+#     "dropped_attributes": 0,
+#     "timestamp": "2024-08-02T22:37:54.289188Z",
+#     "observed_timestamp": "2024-08-02T22:37:54.289259Z",
+#     "trace_id": "0x01938e8cc651635d09507a1cde833818",
+#     "span_id": "0xc9aebaa349550468",
+#     "trace_flags": 1,
+#     "resource": {
+#         "attributes": {
+#             "telemetry.sdk.language": "python",
+#             "telemetry.sdk.name": "opentelemetry",
+#             "telemetry.sdk.version": "1.26.0",
+#             "service.name": "unknown_service"
+#         },
+#         "schema_url": ""
+#     }
+# }
+# {
+#     "resource_metrics": [
+#         {
+#             "resource": {
+#                 "attributes": {
+#                     "telemetry.sdk.language": "python",
+#                     "telemetry.sdk.name": "opentelemetry",
+#                     "telemetry.sdk.version": "1.26.0",
+#                     "service.name": "unknown_service"
+#                 },
+#                 "schema_url": ""
+#             },
+#             "scope_metrics": [
+#                 {
+#                     "scope": {
+#                         "name": "diceroller.meter",
+#                         "version": "",
+#                         "schema_url": "",
+#                         "attributes": null
+#                     },
+#                     "metrics": [
+#                         {
+#                             "name": "dice.rolls",
+#                             "description": "The number of rolls by roll value",
+#                             "unit": "",
+#                             "data": {
+#                                 "data_points": [
+#                                     {
+#                                         "attributes": {
+#                                             "roll.value": "2"
+#                                         },
+#                                         "start_time_unix_nano": 1722638274289139000,
+#                                         "time_unix_nano": 1722638280952414000,
+#                                         "value": 1
+#                                     }
+#                                 ],
+#                                 "aggregation_temporality": 2,
+#                                 "is_monotonic": true
+#                             }
+#                         }
+#                     ],
+#                     "schema_url": ""
+#                 }
+#             ],
+#             "schema_url": ""
+#         }
+#     ]
+# }
+# {
+#     "resource_metrics": [
+#         {
+#             "resource": {
+#                 "attributes": {
+#                     "telemetry.sdk.language": "python",
+#                     "telemetry.sdk.name": "opentelemetry",
+#                     "telemetry.sdk.version": "1.26.0",
+#                     "service.name": "unknown_service"
+#                 },
+#                 "schema_url": ""
+#             },
+#             "scope_metrics": [
+#                 {
+#                     "scope": {
+#                         "name": "diceroller.meter",
+#                         "version": "",
+#                         "schema_url": "",
+#                         "attributes": null
+#                     },
+#                     "metrics": [
+#                         {
+#                             "name": "dice.rolls",
+#                             "description": "The number of rolls by roll value",
+#                             "unit": "",
+#                             "data": {
+#                                 "data_points": [
+#                                     {
+#                                         "attributes": {
+#                                             "roll.value": "2"
+#                                         },
+#                                         "start_time_unix_nano": 1722638274289139000,
+#                                         "time_unix_nano": 1722638285210709000,
+#                                         "value": 1
+#                                     }
+#                                 ],
+#                                 "aggregation_temporality": 2,
+#                                 "is_monotonic": true
+#                             }
+#                         }
+#                     ],
+#                     "schema_url": ""
+#                 }
+#             ],
+#             "schema_url": ""
+#         }
+#     ]
+# }
